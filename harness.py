@@ -9,9 +9,6 @@ import shutil
 import subprocess
 import sys
 
-import anthropic
-from anthropic import beta_tool
-
 FLOX_ENV = os.environ.get("FLOX_ENV")
 # The agent's entire toolbox: whatever the manifest put in $FLOX_ENV/bin.
 AGENT_PATH = f"{FLOX_ENV}/bin" if FLOX_ENV else ""
@@ -31,7 +28,6 @@ def check() -> None:
         print(f"  postgres: {'up' if pg else 'down'}   redis: {'up' if rd else 'down'}")
 
 
-@beta_tool
 def run_shell(command: str) -> str:
     """Run a shell command. Available CLIs: psql (Postgres, already configured via
     PG* env vars), redis-cli (use -p $REDIS_PORT), python3, uv. Nothing else is installed.
@@ -55,6 +51,9 @@ def main() -> None:
     if not FLOX_ENV:
         sys.exit("Run inside the Flox environment: flox activate -- python harness.py ...")
 
+    import anthropic
+    from anthropic import beta_tool
+
     client = anthropic.Anthropic()
     runner = client.beta.messages.tool_runner(
         model="claude-opus-5-5",
@@ -64,7 +63,7 @@ def main() -> None:
         extra_body={"fallbacks": "default"},
         system="You are an ops agent. Use run_shell to inspect the Postgres database and "
                "Redis. Be brief. Finish with a short plain-text answer.",
-        tools=[run_shell],
+        tools=[beta_tool(run_shell)],
         messages=[{"role": "user", "content": " ".join(sys.argv[1:])}],
     )
     for message in runner:
