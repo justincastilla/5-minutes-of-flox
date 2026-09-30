@@ -1,0 +1,433 @@
+{
+  "lockfile-version": 1,
+  "manifest": {
+    "schema-version": "1.17.0",
+    "install": {
+      "postgresql_16": {
+        "pkg-path": "postgresql_16"
+      },
+      "python313": {
+        "pkg-path": "python313"
+      },
+      "redis": {
+        "pkg-path": "redis"
+      },
+      "uv": {
+        "pkg-path": "uv"
+      }
+    },
+    "vars": {
+      "PGDATABASE": "agent",
+      "PGHOST": "/tmp/fivemin-postgres",
+      "PGPORT": "5432",
+      "PGUSER": "postgres",
+      "REDIS_HOST": "127.0.0.1",
+      "REDIS_PORT": "6380"
+    },
+    "hook": {
+      "on-activate": "  export PGDATA=\"$FLOX_ENV_CACHE/postgres\"\n  export REDIS_URL=\"redis://$REDIS_HOST:$REDIS_PORT/0\"\n  export UV_CACHE_DIR=\"$FLOX_ENV_CACHE/uv\"\n  mkdir -p \"$PGHOST\"\n\n  if [ ! -d \"$PGDATA\" ]; then\n    initdb -D \"$PGDATA\" --username=\"$PGUSER\" --auth=trust --no-locale --encoding=UTF8 >/dev/null\n    pg_ctl -D \"$PGDATA\" -o \"-p $PGPORT -k $PGHOST -c listen_addresses=''\" -l \"$PGDATA/init.log\" -w start >/dev/null\n    createdb \"$PGDATABASE\"\n    psql -q -f \"$FLOX_ENV_PROJECT/seed.sql\"\n    pg_ctl -D \"$PGDATA\" -m fast -w stop >/dev/null\n  fi\n\n  cd \"$FLOX_ENV_PROJECT\"\n  uv sync --quiet\n  source .venv/bin/activate\n"
+    },
+    "options": {
+      "systems": [
+        "aarch64-darwin",
+        "x86_64-linux",
+        "aarch64-linux"
+      ]
+    },
+    "services": {
+      "auto-start": true,
+      "postgres": {
+        "command": "exec postgres -D \"$PGDATA\" -p \"$PGPORT\" -k \"$PGHOST\" -c listen_addresses=\"\""
+      },
+      "redis": {
+        "command": "  mkdir -p \"$FLOX_ENV_CACHE/redis\"\n  exec redis-server --bind \"$REDIS_HOST\" --port \"$REDIS_PORT\" --dir \"$FLOX_ENV_CACHE/redis\"\n"
+      }
+    }
+  },
+  "packages": [
+    {
+      "attr_path": "postgresql_16",
+      "broken": false,
+      "derivation": "/nix/store/z224zf7cvqvqkgj76gayjy5awavlaci6-postgresql-16.15.drv",
+      "description": "Powerful, open source object-relational database system",
+      "install_id": "postgresql_16",
+      "license": "PostgreSQL",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "name": "postgresql-16.15",
+      "pname": "postgresql_16",
+      "rev": "7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "rev_count": 1080855,
+      "rev_date": "2026-09-28T06:58:16Z",
+      "scrape_date": "2026-09-29T04:59:08.093050Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "16.15",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/qkqs6pjakmb9z6vgc23q9am7hw5d6iy9-postgresql-16.15-dev",
+        "doc": "/nix/store/570k3026s1qrf9g311mv0b0qmlhs798b-postgresql-16.15-doc",
+        "jit": "/nix/store/gdyw2jxdcqbfzy5b2x6m15v6g3byaijd-postgresql-16.15-jit",
+        "lib": "/nix/store/0hl53hhzd2z9d9gcbww5ak217lb1ppj4-postgresql-16.15-lib",
+        "man": "/nix/store/3r82c0czvg3slgaj0c0cxsi2vrls50pn-postgresql-16.15-man",
+        "out": "/nix/store/00pjg4wzlg32ihqpcfw7jcm5q99r55vk-postgresql-16.15",
+        "plperl": "/nix/store/ji0gz6b0j74gnyii0mhlxcms8anc53fk-postgresql-16.15-plperl",
+        "plpython3": "/nix/store/7wfw6mjmakl9dbahkd43yf1fi6vxaq25-postgresql-16.15-plpython3",
+        "pltcl": "/nix/store/yrn95rv5in7rlscmwlpwsvgfs0yp795y-postgresql-16.15-pltcl"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "postgresql_16",
+      "broken": false,
+      "derivation": "/nix/store/s3rwrsga9wvqhz1qb4670y7qbiacv5pa-postgresql-16.15.drv",
+      "description": "Powerful, open source object-relational database system",
+      "install_id": "postgresql_16",
+      "license": "PostgreSQL",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "name": "postgresql-16.15",
+      "pname": "postgresql_16",
+      "rev": "7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "rev_count": 1080855,
+      "rev_date": "2026-09-28T06:58:16Z",
+      "scrape_date": "2026-09-29T05:30:59.574213Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "16.15",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/ai3gn95svdpf7qk46hfads8b09wqjgar-postgresql-16.15-debug",
+        "dev": "/nix/store/ak9brh1r8l96naqwndmcys45f1bbv830-postgresql-16.15-dev",
+        "doc": "/nix/store/41vx6ggpqpjsr27rvsin924lvczd836r-postgresql-16.15-doc",
+        "jit": "/nix/store/y2z9jxhyqr4qgw3a951hgrrfvf0mm28g-postgresql-16.15-jit",
+        "lib": "/nix/store/qd7h7kqmgsmz9cphb539x1z3jlvz4v35-postgresql-16.15-lib",
+        "man": "/nix/store/rqlisjqfybfy3r20vivngy97vfdgkmf9-postgresql-16.15-man",
+        "out": "/nix/store/aqjimpbj47fg1z6v9cdnx41hcyyyr38p-postgresql-16.15",
+        "plperl": "/nix/store/zpkb7aryq2vx9idmk5b446wlkx3snaaf-postgresql-16.15-plperl",
+        "plpython3": "/nix/store/gx9c8v6zx9himwkihv9l2y64r7dhd79v-postgresql-16.15-plpython3",
+        "pltcl": "/nix/store/2spb73c53li2b53wxyzwzw7j0dyfm9vn-postgresql-16.15-pltcl"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "postgresql_16",
+      "broken": false,
+      "derivation": "/nix/store/2bhx584jfbslpnvrygb8wjz2w23imkcx-postgresql-16.15.drv",
+      "description": "Powerful, open source object-relational database system",
+      "install_id": "postgresql_16",
+      "license": "PostgreSQL",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "name": "postgresql-16.15",
+      "pname": "postgresql_16",
+      "rev": "7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "rev_count": 1080855,
+      "rev_date": "2026-09-28T06:58:16Z",
+      "scrape_date": "2026-09-29T06:07:03.799778Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "16.15",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/05fmch37pxcp5m741dg6migqdp6q7q54-postgresql-16.15-debug",
+        "dev": "/nix/store/k0822z2c29z5gsh7ygmvqhhg827kswby-postgresql-16.15-dev",
+        "doc": "/nix/store/60jg88lrnyw54dp59g16y4yrd9ik3sr7-postgresql-16.15-doc",
+        "jit": "/nix/store/3xasdn1f82x27r5q0gjzqvcc11zn6mdn-postgresql-16.15-jit",
+        "lib": "/nix/store/yks7ab5rpbmddgl3bcc80x8rzchwa3ap-postgresql-16.15-lib",
+        "man": "/nix/store/jjx9ggp7cd60pc30xisr6n61z5m60wqr-postgresql-16.15-man",
+        "out": "/nix/store/9x9vksxdfasrvfw4wlpirlbnlc2wyi3v-postgresql-16.15",
+        "plperl": "/nix/store/6q198bj3cy0dak9k4x9d71f95zzb8g9z-postgresql-16.15-plperl",
+        "plpython3": "/nix/store/zsv1x0244j5myn1drsqm9a6jznsjr77y-postgresql-16.15-plpython3",
+        "pltcl": "/nix/store/y2jjw43mv61wvk6p1zdkfix2lb3z943y-postgresql-16.15-pltcl"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "python313",
+      "broken": false,
+      "derivation": "/nix/store/14v95xzisl9a2r8474869hvgpiw4250m-python3-3.13.15.drv",
+      "description": "High-level dynamically-typed programming language",
+      "install_id": "python313",
+      "license": "Python-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "name": "python3-3.13.15",
+      "pname": "python313",
+      "rev": "7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "rev_count": 1080855,
+      "rev_date": "2026-09-28T06:58:16Z",
+      "scrape_date": "2026-09-29T04:59:09.013178Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "python3-3.13.15",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/y5cgjdmf3mw3xdh6hamdgx0v8q0aiffs-python3-3.13.15"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "python313",
+      "broken": false,
+      "derivation": "/nix/store/4wx4kk7x8a51yf126jk7hzl0ygyisf9y-python3-3.13.15.drv",
+      "description": "High-level dynamically-typed programming language",
+      "install_id": "python313",
+      "license": "Python-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "name": "python3-3.13.15",
+      "pname": "python313",
+      "rev": "7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "rev_count": 1080855,
+      "rev_date": "2026-09-28T06:58:16Z",
+      "scrape_date": "2026-09-29T05:31:00.950980Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "python3-3.13.15",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/mpki30gf9dz6l63g664f298cwd1p173g-python3-3.13.15-debug",
+        "out": "/nix/store/s81lcrdqrwmvnqdl8h7m711xafjdx17f-python3-3.13.15"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "python313",
+      "broken": false,
+      "derivation": "/nix/store/kiq5vxw0qw5bcg5yzwgim69swbhbi44h-python3-3.13.15.drv",
+      "description": "High-level dynamically-typed programming language",
+      "install_id": "python313",
+      "license": "Python-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "name": "python3-3.13.15",
+      "pname": "python313",
+      "rev": "7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "rev_count": 1080855,
+      "rev_date": "2026-09-28T06:58:16Z",
+      "scrape_date": "2026-09-29T06:07:05.272856Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "python3-3.13.15",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/2vb0vc1jlf6jz56187i0vxgczi8kz45w-python3-3.13.15-debug",
+        "out": "/nix/store/wj1f56qky4pmjc7l0r6b6l7whnnw7hp6-python3-3.13.15"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "redis",
+      "broken": false,
+      "derivation": "/nix/store/1lyf4bmark7gh0qjb0xvaj4c5qhj90sv-redis-8.10.2.drv",
+      "description": "Open source, advanced key-value store",
+      "install_id": "redis",
+      "license": "AGPL-3.0-only",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "name": "redis-8.10.2",
+      "pname": "redis",
+      "rev": "7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "rev_count": 1080855,
+      "rev_date": "2026-09-28T06:58:16Z",
+      "scrape_date": "2026-09-29T05:00:01.550975Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "8.10.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/48dfc2c1n3zsl0jvwl2bgkqx0x5g9g52-redis-8.10.2"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "redis",
+      "broken": false,
+      "derivation": "/nix/store/j42f7hfiaffqpm1lygjqs53d6q674k3b-redis-8.10.2.drv",
+      "description": "Open source, advanced key-value store",
+      "install_id": "redis",
+      "license": "AGPL-3.0-only",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "name": "redis-8.10.2",
+      "pname": "redis",
+      "rev": "7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "rev_count": 1080855,
+      "rev_date": "2026-09-28T06:58:16Z",
+      "scrape_date": "2026-09-29T05:32:06.009111Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "8.10.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/9y6zy5l3y2g9p349vcmlnpm0m9zr2yd5-redis-8.10.2"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "redis",
+      "broken": false,
+      "derivation": "/nix/store/nyad294backfl93dfnpc65xyz9nmqs6v-redis-8.10.2.drv",
+      "description": "Open source, advanced key-value store",
+      "install_id": "redis",
+      "license": "AGPL-3.0-only",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "name": "redis-8.10.2",
+      "pname": "redis",
+      "rev": "7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "rev_count": 1080855,
+      "rev_date": "2026-09-28T06:58:16Z",
+      "scrape_date": "2026-09-29T06:08:11.985572Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "8.10.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/kjirjpbcf52z7ygl7rvn0vf3vk4rgw3m-redis-8.10.2"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "uv",
+      "broken": false,
+      "derivation": "/nix/store/3rdccdjs2hjjnp9gxahik65kfc2d649c-uv-0.12.17.drv",
+      "description": "Extremely fast Python package installer and resolver, written in Rust",
+      "install_id": "uv",
+      "license": "[ Apache-2.0, MIT ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "name": "uv-0.12.17",
+      "pname": "uv",
+      "rev": "7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "rev_count": 1080855,
+      "rev_date": "2026-09-28T06:58:16Z",
+      "scrape_date": "2026-09-29T05:01:15.585170Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.12.17",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/vxhya8li5fm7ky01b5mv396vf5wlz9dh-uv-0.12.17"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "uv",
+      "broken": false,
+      "derivation": "/nix/store/ffh99clx6zbs0ln0cvihkn0vm31y7ng1-uv-0.12.17.drv",
+      "description": "Extremely fast Python package installer and resolver, written in Rust",
+      "install_id": "uv",
+      "license": "[ Apache-2.0, MIT ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "name": "uv-0.12.17",
+      "pname": "uv",
+      "rev": "7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "rev_count": 1080855,
+      "rev_date": "2026-09-28T06:58:16Z",
+      "scrape_date": "2026-09-29T05:33:38.572155Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.12.17",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/lwq6f227dil0a8ynxsjxvrl0xcmmam9q-uv-0.12.17"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "uv",
+      "broken": false,
+      "derivation": "/nix/store/p2rhahw3rvkc3pigjgkcqyx7bhx0qr4n-uv-0.12.17.drv",
+      "description": "Extremely fast Python package installer and resolver, written in Rust",
+      "install_id": "uv",
+      "license": "[ Apache-2.0, MIT ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "name": "uv-0.12.17",
+      "pname": "uv",
+      "rev": "7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+      "rev_count": 1080855,
+      "rev_date": "2026-09-28T06:58:16Z",
+      "scrape_date": "2026-09-29T06:09:47.368035Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.12.17",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/cdj5kh05zgih6fc8bq128ala4c2mwybn-uv-0.12.17"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    }
+  ]
+}

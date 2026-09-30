@@ -1,0 +1,50 @@
+schema-version = "1.17.0"
+
+[install]
+postgresql_16.pkg-path = "postgresql_16"
+redis.pkg-path = "redis"
+python313.pkg-path = "python313"
+uv.pkg-path = "uv"
+
+[vars]
+PGHOST = "/tmp/fivemin-postgres"
+PGPORT = "5432"
+PGUSER = "postgres"
+PGDATABASE = "agent"
+REDIS_HOST = "127.0.0.1"
+REDIS_PORT = "6380"
+
+[hook]
+on-activate = '''
+  export PGDATA="$FLOX_ENV_CACHE/postgres"
+  export REDIS_URL="redis://$REDIS_HOST:$REDIS_PORT/0"
+  export UV_CACHE_DIR="$FLOX_ENV_CACHE/uv"
+  mkdir -p "$PGHOST"
+
+  if [ ! -d "$PGDATA" ]; then
+    initdb -D "$PGDATA" --username="$PGUSER" --auth=trust --no-locale --encoding=UTF8 >/dev/null
+    pg_ctl -D "$PGDATA" -o "-p $PGPORT -k $PGHOST -c listen_addresses=''" -l "$PGDATA/init.log" -w start >/dev/null
+    createdb "$PGDATABASE"
+    psql -q -f "$FLOX_ENV_PROJECT/seed.sql"
+    pg_ctl -D "$PGDATA" -m fast -w stop >/dev/null
+  fi
+
+  cd "$FLOX_ENV_PROJECT"
+  uv sync --quiet
+  source .venv/bin/activate
+'''
+
+[services]
+auto-start = true
+
+[services.postgres]
+command = '''exec postgres -D "$PGDATA" -p "$PGPORT" -k "$PGHOST" -c listen_addresses=""'''
+
+[services.redis]
+command = '''
+  mkdir -p "$FLOX_ENV_CACHE/redis"
+  exec redis-server --bind "$REDIS_HOST" --port "$REDIS_PORT" --dir "$FLOX_ENV_CACHE/redis"
+'''
+
+[options]
+systems = ["aarch64-darwin", "x86_64-linux", "aarch64-linux"]
